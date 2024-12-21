@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Random Number Winner</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      background: linear-gradient(to right, white, blue);
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    /* Moving and Blinking Text */
+    #movingText {
+      position: absolute;
+      top: 10px;
+      width: 100%;
+      font-size: 40px;
+      font-weight: bold;
+      text-align: center;
+      color: darkblue;
+      animation: moveText 5s infinite alternate ease-in-out, blink 1s infinite;
+    }
+
+    @keyframes moveText {
+      0% { transform: translateX(-10px); }
+      100% { transform: translateX(10px); }
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Winner Message */
+    #winnerMessage {
+      font-size: 50px;
+      font-weight: bold;
+      color: green;
+      margin-bottom: 10px;
+      display: none; /* Initially hidden */
+    }
+
+    /* Random Number Display */
+    #number {
+      font-size: 100px;
+      font-weight: bold;
+      color: black;
+      margin-bottom: 20px;
+    }
+
+    /* Input and Button */
+    input {
+      padding: 10px;
+      font-size: 18px;
+      margin: 5px;
+    }
+
+    button {
+      padding: 15px 30px;
+      font-size: 20px;
+      border: none;
+      background: blue;
+      color: white;
+      cursor: pointer;
+      border-radius: 5px;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background: darkblue;
+    }
+  </style>
+</head>
+<body>
+  <!-- Moving Text -->
+  <div id="movingText">•••9𝑝𝑚 𝑤𝑖𝑛𝑛𝑒𝑟𝑠 𝑠𝑒𝑙𝑒𝑐𝑡𝑖𝑜𝑛•••</div>
+
+  <!-- Winner Message -->
+  <div id="winnerMessage">Winner 🏆🎊</div>
+
+  <!-- Random Number Display -->
+  <div id="number">-</div>
+
+  <!-- Input Fields -->
+  <div>
+    <input type="number" id="from" placeholder="From" />
+    <input type="number" id="to" placeholder="To" />
+  </div>
+
+  <!-- Generate Button -->
+  <button id="generate">Generate Number</button>
+
+  <script>
+    let clickCount = 0; // Track button clicks
+
+    function getRandomNumber(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function startAnimation(min, max, isThirdClick, callback) {
+      const numberElement = document.getElementById('number');
+      const winnerMessage = document.getElementById('winnerMessage');
+
+      winnerMessage.style.display = 'none'; // Hide winner message at start
+
+      let count = 0;
+      const interval = setInterval(() => {
+        // If it's the third click, force the number to be 1
+        if (isThirdClick && count > 15) {
+          numberElement.textContent = 1; // Show 1 at the end
+        } else {
+          numberElement.textContent = getRandomNumber(min, max); // Generate random numbers
+        }
+
+        count++;
+
+        if (count > 20) { // Stops animation after 20 cycles
+          clearInterval(interval);
+          callback(isThirdClick);
+        }
+      }, 50); // Animation speed
+    }
+
+    document.getElementById('generate').addEventListener('click', () => {
+      clickCount++; // Increase click count
+
+      const min = parseInt(document.getElementById('from').value);
+      const max = parseInt(document.getElementById('to').value);
+
+      if (isNaN(min) || isNaN(max) || min >= max) {
+        alert('Please enter a valid range.');
+        return;
+      }
+
+      const isThirdClick = clickCount === 3; // Check if it's the third click
+
+      startAnimation(min, max, isThirdClick, (forceOne) => {
+        let finalNumber = forceOne ? 1 : getRandomNumber(min, max); // Show 1 if it's the third click
+        document.getElementById('number').textContent = finalNumber;
+
+        // Show winner message
+        document.getElementById('winnerMessage').style.display = 'block';
+      });
+    });
+  </script>
+</body>
+</html>
